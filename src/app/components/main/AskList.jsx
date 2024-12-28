@@ -3,8 +3,11 @@
 import React, { useEffect, useState } from "react";
 import PrivacyNoticeModal from "./PrivacyNoticeModal";
 
-export default function AskList() {
-  const [formData, setFormData] = useState({
+export default function AskList({ setFormData }) {
+  const [showPhoneDropdown, setShowPhoneDropdown] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [tempData, setTempData] = useState({
     name: "",
     phone1: "010",
     phone2: "",
@@ -16,15 +19,11 @@ export default function AskList() {
     agreement: false,
   });
 
-  const [showPhoneDropdown, setShowPhoneDropdown] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [errors, setErrors] = useState({});
-
   const phonePrefix = ["010", "011", "016", "017", "018", "019"];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setTempData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -40,7 +39,7 @@ export default function AskList() {
   const handlePhoneChange = (e) => {
     const { name, value } = e.target;
     if (value.match(/^[0-9]*$/) || value === "") {
-      setFormData((prev) => ({
+      setTempData((prev) => ({
         ...prev,
         [name]: value,
       }));
@@ -54,7 +53,7 @@ export default function AskList() {
   };
 
   const handlePrefixSelect = (prefix) => {
-    setFormData((prev) => ({
+    setTempData((prev) => ({
       ...prev,
       phone1: prefix,
     }));
@@ -64,33 +63,37 @@ export default function AskList() {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) {
+    if (!tempData.name.trim()) {
       newErrors.name = "이름을 입력해주세요";
     }
 
-    if (!formData.phone2 || !formData.phone3) {
+    if (!tempData.phone2 || !tempData.phone3) {
       newErrors.phone = "연락처를 완성해주세요";
-    } else if (formData.phone2.length < 3 || formData.phone3.length < 4) {
+    } else if (tempData.phone2.length < 3 || tempData.phone3.length < 4) {
       newErrors.phone = "연락처 형식이 올바르지 않습니다";
     }
 
-    if (!formData.companyName.trim()) {
+    if (!tempData.companyName.trim()) {
       newErrors.companyName = "회사명을 입력해주세요";
     }
 
-    if (!formData.businessType.trim()) {
+    if (!tempData.businessType.trim()) {
       newErrors.businessType = "업종을 입력해주세요";
     }
 
-    if (!formData.address.trim()) {
+    if (!tempData.address.trim()) {
       newErrors.address = "사업장 주소를 입력해주세요";
     }
 
-    if (!formData.confirmation) {
+    if (!tempData.confirmation) {
       newErrors.confirmation = "확인 여부를 선택해주세요";
     }
 
-    if (!formData.agreement) {
+    if (!tempData.confirmation === "no") {
+      newErrors.confirmation = "아니오 의 경우 더이상 진행이 불가합니다.";
+    }
+
+    if (!tempData.agreement) {
       newErrors.agreement = "개인정보 수집·이용에 동의해주세요";
     }
 
@@ -103,9 +106,21 @@ export default function AskList() {
 
     if (validateForm()) {
       // 여기에 실제 제출 로직 추가
+      setFormData((prev) => [...prev, { ...tempData }]);
       alert(
         "상담신청이 완료되었습니다. 담당자가 빠른시간내 상담드리도록 하겠습니다."
       );
+      setTempData({
+        name: "",
+        phone1: "010",
+        phone2: "",
+        phone3: "",
+        companyName: "",
+        businessType: "",
+        address: "",
+        confirmation: "",
+        agreement: false,
+      });
     }
   };
 
@@ -129,7 +144,7 @@ export default function AskList() {
             type="text"
             name="name"
             placeholder="이름을 입력해주세요"
-            value={formData.name}
+            value={tempData.name}
             onChange={handleChange}
             className={`w-full px-3 py-2 border ${
               errors.name ? "border-red-500" : "border-gray-300"
@@ -150,7 +165,7 @@ export default function AskList() {
               <input
                 type="text"
                 name="phone1"
-                value={formData.phone1}
+                value={tempData.phone1}
                 onClick={() => setShowPhoneDropdown(!showPhoneDropdown)}
                 readOnly
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm cursor-pointer bg-white"
@@ -173,7 +188,7 @@ export default function AskList() {
             <input
               type="text"
               name="phone2"
-              value={formData.phone2}
+              value={tempData.phone2}
               onChange={handlePhoneChange}
               className={`w-full px-3 py-2 border ${
                 errors.phone ? "border-red-500" : "border-gray-300"
@@ -184,7 +199,7 @@ export default function AskList() {
             <input
               type="text"
               name="phone3"
-              value={formData.phone3}
+              value={tempData.phone3}
               onChange={handlePhoneChange}
               className={`w-full px-3 py-2 border ${
                 errors.phone ? "border-red-500" : "border-gray-300"
@@ -209,7 +224,7 @@ export default function AskList() {
             type="text"
             id="companyName"
             name="companyName"
-            value={formData.companyName}
+            value={tempData.companyName}
             onChange={handleChange}
             className={`w-full px-3 py-2 border ${
               errors.companyName ? "border-red-500" : "border-gray-300"
@@ -236,7 +251,7 @@ export default function AskList() {
             type="text"
             id="businessType"
             name="businessType"
-            value={formData.businessType}
+            value={tempData.businessType}
             onChange={handleChange}
             className={`w-full px-3 py-2 border ${
               errors.businessType ? "border-red-500" : "border-gray-300"
@@ -260,7 +275,7 @@ export default function AskList() {
             type="text"
             id="address"
             name="address"
-            value={formData.address}
+            value={tempData.address}
             onChange={handleChange}
             className={`w-full px-3 py-2 border ${
               errors.address ? "border-red-500" : "border-gray-300"
@@ -284,7 +299,7 @@ export default function AskList() {
                 id="yes"
                 name="confirmation"
                 value="yes"
-                checked={formData.confirmation === "yes"}
+                checked={tempData.confirmation === "yes"}
                 onChange={handleChange}
                 className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-black"
               />
@@ -298,7 +313,7 @@ export default function AskList() {
                 id="no"
                 name="confirmation"
                 value="no"
-                checked={formData.confirmation === "no"}
+                checked={tempData.confirmation === "no"}
                 onChange={handleChange}
                 className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-black"
               />
@@ -319,9 +334,9 @@ export default function AskList() {
             type="checkbox"
             id="agreement"
             name="agreement"
-            checked={formData.agreement}
+            checked={tempData.agreement}
             onChange={(e) =>
-              setFormData((prev) => ({
+              setTempData((prev) => ({
                 ...prev,
                 agreement: e.target.checked,
               }))
