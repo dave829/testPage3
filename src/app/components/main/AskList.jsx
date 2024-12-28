@@ -114,7 +114,7 @@ export default function AskList() {
   // };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6">
+    <div className="max-w-4xl p-6 flex justify-center items-center flex-col gap-6">
       <form className="space-y-6" onSubmit={submitFundingForm}>
         {/* Name Field */}
         <div className="space-y-2">
@@ -145,7 +145,7 @@ export default function AskList() {
           <label className="block text-sm font-medium text-gray-600">
             연락처
           </label>
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-3 items-center">
             <div className="relative">
               <input
                 type="text"
@@ -153,7 +153,7 @@ export default function AskList() {
                 value={formData.phone1}
                 onClick={() => setShowPhoneDropdown(!showPhoneDropdown)}
                 readOnly
-                className="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm cursor-pointer bg-white"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm cursor-pointer bg-white"
               />
               {showPhoneDropdown && (
                 <div className="absolute top-full left-0 w-24 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10">
@@ -175,7 +175,7 @@ export default function AskList() {
               name="phone2"
               value={formData.phone2}
               onChange={handlePhoneChange}
-              className={`w-24 px-3 py-2 border ${
+              className={`w-full px-3 py-2 border ${
                 errors.phone ? "border-red-500" : "border-gray-300"
               } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black`}
               maxLength={4}
@@ -186,7 +186,7 @@ export default function AskList() {
               name="phone3"
               value={formData.phone3}
               onChange={handlePhoneChange}
-              className={`w-24 px-3 py-2 border ${
+              className={`w-full px-3 py-2 border ${
                 errors.phone ? "border-red-500" : "border-gray-300"
               } rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black`}
               maxLength={4}
